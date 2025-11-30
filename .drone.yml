@@ -73,3 +73,4 @@ steps:
     when:
       branch: [staging]
       status: success
+      trigger: manual

@@ -68,7 +68,8 @@ steps:
       - kubectl config use-context default
       
       # Ganti placeholder tag dan namespace untuk staging
-      - sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: staging|g" k8s-deployment.yaml | kubectl apply -f -
+      - |-
+        sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: staging|g" k8s-deployment.yaml | kubectl apply -f -
     when:
       branch: [staging]
       status: success

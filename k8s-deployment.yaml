@@ -17,7 +17,7 @@ spec:
       containers:
       - name: my-hello-app
         # Tag image akan diganti secara dinamis oleh Drone
-        image: zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}
+        image: zeusxd/my-hello-app:TAG_PLACEHOLDER
         ports:
         - containerPort: 80
 ---

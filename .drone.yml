@@ -33,7 +33,7 @@ steps:
       - kubectl config use-context default
       
       - |-
-        sed -i "s|image: zeusxd/my-hello-app:\${DRONE_BUILD_NUMBER}|image: zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml
+        sed -i "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml
       
       # Terapkan manifest Kubernetes
       - kubectl apply -f k8s-deployment.yaml

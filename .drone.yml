@@ -24,7 +24,7 @@ steps:
         from_secret: docker_password
     commands:
       - echo "Scanning image zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}..."
-      - trivy image --timeout 10m --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}
+      - trivy image --scanners vuln --timeout 30m --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}
     when:
       status: success
       

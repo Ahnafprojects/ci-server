@@ -14,6 +14,19 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
+
+  - name: Security Scan with Trivy
+    image: aquasec/trivy:latest
+    environment:
+      TRIVY_USERNAME:
+        from_secret: docker_username
+      TRIVY_PASSWORD:
+        from_secret: docker_password
+    commands:
+      - echo "Scanning image zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}..."
+      - trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}
+    when:
+      status: success
       
   - name: Deploy to Kubernetes
     image: bitnami/kubectl:latest
@@ -34,3 +47,5 @@ steps:
       
       # Ganti placeholder dan terapkan manifest dalam satu perintah
       - sed "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml | kubectl apply -f -
+    when:
+      status: success

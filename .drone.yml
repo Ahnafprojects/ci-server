@@ -49,3 +49,26 @@ steps:
       - sed "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml | kubectl apply -f -
     when:
       status: success
+
+  - name: Deploy to Staging
+    image: bitnami/kubectl:latest
+    environment:
+      KUBERNETES_SERVER:
+        from_secret: kubernetes_server
+      KUBERNETES_CERT:
+        from_secret: kubernetes_cert
+      KUBERNETES_TOKEN:
+        from_secret: kubernetes_token
+    commands:
+      # Set up Kubeconfig for authentication
+      - echo "$KUBERNETES_CERT" | base64 -d > /tmp/ca.crt
+      - kubectl config set-cluster default --server="$KUBERNETES_SERVER" --certificate-authority=/tmp/ca.crt
+      - kubectl config set-credentials default --token="$KUBERNETES_TOKEN"
+      - kubectl config set-context default --cluster=default --user=default
+      - kubectl config use-context default
+      
+      # Ganti placeholder tag dan namespace untuk staging
+      - sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: staging|g" k8s-deployment.yaml | kubectl apply -f -
+    when:
+      branch: [staging]
+      status: success

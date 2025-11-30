@@ -17,47 +17,24 @@ steps:
       
   - name: Deploy to Kubernetes
     image: bitnami/kubectl:latest
-    settings:
-      kubernetes_template: |
-        ---
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: my-hello-app-deployment
-          labels:
-            app: my-hello-app
-        spec:
-          replicas: 2
-          selector:
-            matchLabels:
-              app: my-hello-app
-          template:
-            metadata:
-              labels:
-                app: my-hello-app
-            spec:
-              containers:
-              - name: my-hello-app
-                image: zeusxd/my-hello-app:${DRONE_BUILD_NUMBER} # Ganti 'zeusxd' jika berbeda
-                ports:
-                - containerPort: 80
-        ---
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: my-hello-app-service
-        spec:
-          type: NodePort
-          selector:
-            app: my-hello-app
-          ports:
-            - protocol: TCP
-              port: 80
-              targetPort: 80
-              nodePort: 30080
-    kubernetes_server:
-      from_secret: kubernetes_server
-    kubernetes_cert:
-      from_secret: kubernetes_cert
-    kubernetes_token:
-      from_secret: kubernetes_token
+    environment:
+      KUBERNETES_SERVER:
+        from_secret: kubernetes_server
+      KUBERNETES_CERT:
+        from_secret: kubernetes_cert
+      KUBERNETES_TOKEN:
+        from_secret: kubernetes_token
+    commands:
+      # Set up Kubeconfig for authentication
+      - echo "$KUBERNETES_CERT" | base64 -d > /tmp/ca.crt
+      - kubectl config set-cluster default --server="$KUBERNETES_SERVER" --certificate-authority=/tmp/ca.crt
+      - kubectl config set-credentials default --token="$KUBERNETES_TOKEN"
+      - kubectl config set-context default --cluster=default --user=default
+      - kubectl config use-context default
+      
+      # Ganti placeholder image tag di file YAML dengan nomor build saat ini
+      - sed -i "s|image: zeusxd/my-hello-app:\${DRONE_BUILD_NUMBER}|image: zeusxd/my-hello-app:${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml
+      
+      # Terapkan manifest Kubernetes
+      - kubectl apply -f k8s-deployment.yaml
+      - echo "Deployment successful!"

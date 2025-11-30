@@ -16,7 +16,7 @@ steps:
         from_secret: docker_password
       
   - name: Deploy to Kubernetes
-    image: drone/kubectl:latest
+    image: bitnami/kubectl:latest
     settings:
       kubernetes_template: |
         ---

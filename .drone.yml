@@ -16,7 +16,7 @@ steps:
         from_secret: docker_password
       
   - name: Deploy to Kubernetes
-    image: sinlead/drone-kubernetes
+    image: lalk/drone-kubectl:latest
     settings:
       kubernetes_template: |
         ---

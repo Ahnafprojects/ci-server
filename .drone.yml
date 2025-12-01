@@ -46,8 +46,8 @@ steps:
       - kubectl config use-context default
       
       # Ganti placeholder dan terapkan manifest dalam satu perintah
-      - sed "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" k8s-deployment.yaml | kubectl apply -f -
     when:
+      branch: [main]
       status: success
 
   - name: Deploy to Staging

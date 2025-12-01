@@ -46,6 +46,8 @@ steps:
       - kubectl config use-context default
       
       # Ganti placeholder dan terapkan manifest dalam satu perintah
+      - |-
+        sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: dev-arif|g" k8s-deployment.yaml | kubectl apply -f -
     when:
       branch: [main]
       status: success
@@ -69,7 +71,7 @@ steps:
       
       # Ganti placeholder tag dan namespace untuk staging
       - |-
-        sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: staging|g" -e "s|nodePort: 30080|nodePort: 30081|g" k8s-deployment.yaml | kubectl apply -f -
+        sed -e "s|TAG_PLACEHOLDER|${DRONE_BUILD_NUMBER}|g" -e "s|namespace: dev|namespace: staging-arif|g" -e "s|nodePort: 30080|nodePort: 30081|g" k8s-deployment.yaml | kubectl apply -f -
     when:
       branch: [staging]
       status: success

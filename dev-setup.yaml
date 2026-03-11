@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-arif
+  labels:
+    name: dev-arif
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev-arif
+  name: dev-deploy-access
+rules:
+- apiGroups: ["", "apps"]
+  resources: ["services", "deployments"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bind-drone-to-dev
+  namespace: dev-arif
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-deploy-access
+subjects:
+- kind: ServiceAccount
+  name: drone-deployer
+  namespace: dev

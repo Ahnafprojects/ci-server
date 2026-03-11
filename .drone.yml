@@ -1,3 +1,4 @@
+#onfigurasi Dasar Pipeline
 kind: pipeline
 type: docker
 name: Build and Deploy
